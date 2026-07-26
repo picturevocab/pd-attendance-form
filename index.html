@@ -121,7 +121,7 @@
     
     <!-- Footer info -->
     <div class="border-t border-slate-100 bg-slate-50 p-3 text-center text-[11px] text-slate-500 font-medium flex items-center justify-center gap-1.5">
-      <i class="fa-solid fa-shield-halved text-blue-600"></i> Location Verified • Al Rowad Auditorium (24.756525, 46.703948)
+      <i class="fa-solid fa-shield-halved text-blue-600"></i> Location Verified • Al Rowad Auditorium (24.756510, 46.703964)
     </div>
   </div>
 
@@ -171,9 +171,9 @@
       document.getElementById('latitude').value = userLat;
       document.getElementById('longitude').value = userLng;
 
-      const AUDITORIUM_LAT = 24.756525;
-      const AUDITORIUM_LNG = 46.703948;
-      const MAX_RADIUS_METERS = 300; // Allow 300 meters for GPS inaccuracy indoors
+      const AUDITORIUM_LAT = 24.756510;
+      const AUDITORIUM_LNG = 46.703964;
+      const MAX_RADIUS_METERS = 60; // Tightened to 60 meters to prevent scanning from outside the auditorium
 
       const distance = calculateDistance(userLat, userLng, AUDITORIUM_LAT, AUDITORIUM_LNG);
 
@@ -267,17 +267,30 @@
           document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Attendance Recorded';
         } else {
           resBox.className = "p-4 rounded-2xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-200 font-medium space-y-1 shadow-sm";
-          resBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg mb-1"></i><br><strong>${res.message}</strong>`;
+          resBox.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg mb-1"></i><br>
+            <strong>${res.message}</strong>
+            <p class="lang-ar mt-1 text-[11px]" dir="rtl">تنبيه: يمكنك تسجيل الحضور فقط إذا كنت متواجدًا داخل مسرح المدرسة.</p>
+          `;
           btn.disabled = false;
           btn.innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Retry Submission';
         }
       })
       .catch(err => {
         resBox.classList.remove('hidden');
-        resBox.className = "p-4 rounded-2xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-200 font-medium space-y-1";
-        resBox.innerHTML = `<strong>Network Error:</strong> ${err.message || 'Failed to communicate with the server.'}`;
+        resBox.className = "p-4 rounded-2xl bg-rose-50 text-rose-900 text-xs text-center border border-rose-200 font-medium space-y-2 p-4 shadow-sm";
+        resBox.innerHTML = `
+          <i class="fa-solid fa-circle-exclamation text-rose-600 text-2xl"></i>
+          <p class="font-bold text-sm text-rose-800">Unable to Connect / تعذّر الاتصال بالسيرفر</p>
+          <p class="text-[11px] text-rose-700 leading-relaxed">
+            Attendance can <strong>only</strong> be recorded while physically present at the <strong>Al Rowad Auditorium</strong> with active GPS location and internet access.
+          </p>
+          <div class="border-t border-rose-200 pt-2 text-[11px] lang-ar text-rose-800 font-semibold" dir="rtl">
+            تنويه: لا يمكن تسجيل الحضور إلا من داخل مسرح مدارس الرواد العالمية. يُرجى التأكد من التواجد في الموقع وتفعيل خدمات الموقع (GPS) والاتصال بالإنترنت ثم إعادة المحاولة.
+          </div>
+        `;
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Retry Submission';
+        btn.innerHTML = '<i class="fa-solid fa-rotate-right text-lg"></i> Retry Submission';
       });
     }
   </script>
