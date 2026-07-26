@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIS Summer Faculty Training 2026 - Attendance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .lang-ar { font-family: 'Cairo', sans-serif; }
+  </style>
+  <script>
+    // ---------------------------------------------------------------------
+    // EMBEDDED GOOGLE APPS SCRIPT WEB APP URL
+    // ---------------------------------------------------------------------
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoSV_ew5viztfjNq1pXl-I2A3IBlGa8JcTbPjmkKtlpl58iGzBHbBhkZDFHEPpaFb5Ww/exec";
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex items-center justify-center p-3 sm:p-5">
+
+  <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden my-4">
+    
+    <!-- Banner Image Container (Searches for banner.png or falls back to CSS styled banner) -->
+    <div class="relative w-full bg-gradient-to-r from-blue-900 via-blue-700 to-sky-600 text-white overflow-hidden">
+      <!-- Banner Image -->
+      <img src="banner.png" 
+           alt="AIS Summer Faculty Training 2026 Header" 
+           class="w-full h-auto object-cover border-b border-blue-100 block"
+           onerror="this.style.display='none'; document.getElementById('fallback-banner').style.display='block';">
+
+      <!-- Fallback Header Design (matches uploaded image in case image is missing) -->
+      <div id="fallback-banner" class="hidden p-6 text-center space-y-2 relative">
+        <div class="flex items-center justify-center gap-2 mb-1">
+          <i class="fa-solid fa-graduation-cap text-2xl text-amber-300"></i>
+          <span class="text-sm font-bold tracking-wide uppercase">Al-Rowad International Schools</span>
+        </div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">AIS SUMMER FACULTY TRAINING 2026</h1>
+        <p class="text-xs text-blue-100 font-medium">Empowering Educators, Inspiring Futures</p>
+        <p class="text-xs text-blue-200 font-semibold lang-ar" dir="rtl">تمكين المعلمين... إلهامٌ للمستقبل</p>
+      </div>
+    </div>
+
+    <div class="p-6 space-y-5">
+      
+      <!-- GPS Location Verification Lock Box -->
+      <div id="location-box" class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-center space-y-2 transition-all duration-300">
+        <i class="fa-solid fa-location-crosshairs text-2xl animate-spin text-amber-600" id="gps-spinner"></i>
+        <p id="gps-status" class="text-xs font-bold">Acquiring your GPS location... / جاري جلب موقعك الجغرافي...</p>
+        <p id="gps-subtext" class="text-[11px] text-amber-700 leading-relaxed">
+          Please allow location access when prompted. <br>
+          <span class="lang-ar text-[11px] font-semibold" dir="rtl">يُرجى تفعيل الموقع الجغرافي (GPS) والموافقة على إذن الوصول عند المطالبة.</span>
+        </p>
+        <button id="retry-gps-btn" onclick="requestLocation()" class="hidden mt-2 px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold transition shadow-sm">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Retry Location Check / إعادة المحاولة
+        </button>
+      </div>
+
+      <!-- Attendance Form -->
+      <form id="attendance-form" onsubmit="handleFormSubmit(event)" class="space-y-4 opacity-40 pointer-events-none transition-all duration-300">
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+
+        <!-- Full Name -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            Full Name <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-user text-sm"></i>
+            </span>
+            <input type="text" id="teacherName" name="teacherName" required placeholder="Enter your full name" 
+                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:outline-none text-sm transition font-medium">
+          </div>
+        </div>
+
+        <!-- School Email -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            School Email <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-envelope text-sm"></i>
+            </span>
+            <input type="email" id="staffEmail" name="staffEmail" required placeholder="teacher@ais.sch.sa" 
+                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:outline-none text-sm transition font-medium">
+          </div>
+        </div>
+
+        <!-- E-Number -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            E-Number (Staff ID) <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-id-card text-sm"></i>
+            </span>
+            <input type="text" id="eNumber" name="eNumber" required placeholder="e.g. E20232" 
+                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:outline-none text-sm transition font-medium">
+          </div>
+        </div>
+
+        <!-- Hidden Session Preset Tag -->
+        <input type="hidden" id="sessionTopic" name="sessionTopic" value="AIS Summer Faculty Training 2026">
+
+        <!-- Submit Button -->
+        <button type="submit" id="submit-btn" disabled 
+                class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2 mt-2">
+          <i class="fa-solid fa-check-circle text-lg"></i> Record Attendance
+        </button>
+      </form>
+
+      <!-- Response Status Message Box -->
+      <div id="result-message" class="hidden p-4 rounded-2xl text-xs font-medium text-center transition-all duration-300"></div>
+
+    </div>
+    
+    <!-- Footer info -->
+    <div class="border-t border-slate-100 bg-slate-50 p-3 text-center text-[11px] text-slate-500 font-medium flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-shield-halved text-blue-600"></i> Location Verified • Al Rowad Auditorium (24.756525, 46.703948)
+    </div>
+  </div>
+
+  <script>
+    // Request GPS location when page loads
+    window.onload = function() {
+      requestLocation();
+    };
+
+    // Haversine formula to calculate distance between two coordinates in meters
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // Earth radius in meters
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; 
+    }
+
+    function requestLocation() {
+      const locBox = document.getElementById('location-box');
+      const retryBtn = document.getElementById('retry-gps-btn');
+      
+      locBox.className = "p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-center space-y-2";
+      document.getElementById('gps-spinner').className = "fa-solid fa-location-crosshairs text-2xl animate-spin text-amber-600";
+      document.getElementById('gps-status').innerText = "Acquiring your GPS location...";
+      document.getElementById('gps-subtext').innerHTML = `Please allow location access when prompted by your browser.<br><span class="lang-ar text-[11px] font-semibold" dir="rtl">يُرجى الموافقة على إذن الوصول للموقع عند ظهور التنبيه.</span>`;
+      retryBtn.classList.add('hidden');
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        });
+      } else {
+        showLocationError("Geolocation is not supported on this device.", "خاصية تحديد الموقع الجغرافي غير مدعومة على هذا الجهاز.");
+      }
+    }
+
+    function onLocationSuccess(position) {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+      
+      document.getElementById('latitude').value = userLat;
+      document.getElementById('longitude').value = userLng;
+
+      const AUDITORIUM_LAT = 24.756525;
+      const AUDITORIUM_LNG = 46.703948;
+      const MAX_RADIUS_METERS = 300; // Allow 300 meters for GPS inaccuracy indoors
+
+      const distance = calculateDistance(userLat, userLng, AUDITORIUM_LAT, AUDITORIUM_LNG);
+
+      if (distance <= MAX_RADIUS_METERS) {
+        const locBox = document.getElementById('location-box');
+        locBox.className = "p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center space-y-1";
+        document.getElementById('gps-spinner').className = "fa-solid fa-circle-check text-2xl text-emerald-600";
+        document.getElementById('gps-status').innerText = "📍 Location Verified / تم التحقق من الموقع";
+        document.getElementById('gps-subtext').innerHTML = `Form unlocked. Please complete your details below.<br><span class="lang-ar text-[11px] font-semibold" dir="rtl">تم فتح نموذج الحضور. يُرجى تعبئة بياناتك أدناه.</span>`;
+
+        // Enable form inputs
+        const form = document.getElementById('attendance-form');
+        form.classList.remove('opacity-40', 'pointer-events-none');
+        document.getElementById('submit-btn').disabled = false;
+      } else {
+        showLocationError(
+          `You are outside the auditorium zone. Distance: ${Math.round(distance)} meters. You must be within ${MAX_RADIUS_METERS}m of the venue.`,
+          `أنت خارج نطاق المسرح. المسافة: ${Math.round(distance)} متر. يجب أن تكون ضمن مسافة ${MAX_RADIUS_METERS}م للتسجيل.`
+        );
+      }
+    }
+
+    function onLocationError(error) {
+      let msgEng = "Unable to fetch GPS location.";
+      let msgAr = "عذراً، تعذّر الوصول إلى موقعك الجغرافي.";
+
+      if (error.code === error.PERMISSION_DENIED) {
+        msgEng = "Location permission was denied. Please enable GPS access in browser settings and retry.";
+        msgAr = "تم رفض الإذن للوصول للموقع. يُرجى تفعيل الموقع (GPS) في إعدادات المتصفح ثم المحاولة مجدداً.";
+      } else if (error.code === error.POSITION_UNAVAILABLE) {
+        msgEng = "Location unavailable. Ensure GPS / Wi-Fi is turned on.";
+        msgAr = "الموقع غير متاح. يُرجى التأكد من تشغيل الواي فاي أو نظام GPS.";
+      } else if (error.code === error.TIMEOUT) {
+        msgEng = "Location request timed out. Please try again.";
+        msgAr = "انتهت مهلة طلب الموقع. يُرجى المحاولة مرة أخرى.";
+      }
+      showLocationError(msgEng, msgAr);
+    }
+
+    function showLocationError(msgEng, msgAr) {
+      const locBox = document.getElementById('location-box');
+      locBox.className = "p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-center space-y-1.5";
+      document.getElementById('gps-spinner').className = "fa-solid fa-triangle-exclamation text-2xl text-rose-600";
+      document.getElementById('gps-status').innerText = "🔒 Location Lock Active | نظام القفل الجغرافي فعال";
+      document.getElementById('gps-subtext').innerHTML = `
+        <div class="text-[11px] leading-tight space-y-1">
+          <p><strong>English:</strong> ${msgEng}</p>
+          <p class="lang-ar text-[11px] font-semibold text-rose-800" dir="rtl">
+            <strong>شرح نظام القفل الجغرافي:</strong> لتسجيل الحضور، يجب أن تكون متواجدًا فعليًا داخل مسرح مدارس الرواد العالمية مع تشغيل نظام الموقع (GPS) في هاتفك. ${msgAr}
+          </p>
+        </div>
+      `;
+      document.getElementById('retry-gps-btn').classList.remove('hidden');
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const resBox = document.getElementById('result-message');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin text-lg"></i> Verifying Location & Submitting...';
+      resBox.classList.add('hidden');
+
+      const formData = {
+        teacherName: document.getElementById('teacherName').value,
+        staffEmail: document.getElementById('staffEmail').value,
+        eNumber: document.getElementById('eNumber').value,
+        sessionTopic: document.getElementById('sessionTopic').value,
+        latitude: document.getElementById('latitude').value,
+        longitude: document.getElementById('longitude').value
+      };
+
+      // Send payload to Google Apps Script Web App backend
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(res => {
+        resBox.classList.remove('hidden');
+        if (res.success) {
+          resBox.className = "p-4 rounded-2xl bg-emerald-100 text-emerald-900 text-xs text-center border border-emerald-200 font-medium space-y-1 shadow-sm";
+          resBox.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg mb-1"></i><br><strong class="text-sm">${res.message}</strong>`;
+          document.getElementById('attendance-form').reset();
+          document.getElementById('attendance-form').classList.add('opacity-40', 'pointer-events-none');
+          document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Attendance Recorded';
+        } else {
+          resBox.className = "p-4 rounded-2xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-200 font-medium space-y-1 shadow-sm";
+          resBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-600 text-lg mb-1"></i><br><strong>${res.message}</strong>`;
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Retry Submission';
+        }
+      })
+      .catch(err => {
+        resBox.classList.remove('hidden');
+        resBox.className = "p-4 rounded-2xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-200 font-medium space-y-1";
+        resBox.innerHTML = `<strong>Network Error:</strong> ${err.message || 'Failed to communicate with the server.'}`;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check-circle text-lg"></i> Retry Submission';
+      });
+    }
+  </script>
+</body>
+</html>
