@@ -79,7 +79,7 @@
       <div id="already-submitted" class="hidden p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-3 fade-in">
         <i class="fa-solid fa-circle-check text-4xl text-emerald-500"></i>
         <h3 class="font-bold text-slate-900">Attendance Already Recorded</h3>
-        <p class="text-xs text-slate-600">This device has already been used to submit attendance for this session.</p>
+        <p class="text-xs text-slate-600">This device has already been used to submit attendance for today's session. Come back tomorrow to check in again.</p>
       </div>
 
       <!-- GPS Location Verification Strip -->
@@ -137,9 +137,17 @@
   <script>
     let deviceFingerprintValue = "";
 
+    // Local (device) date key, used only to auto-expire the "already
+    // submitted" flag each day — actual duplicate enforcement happens
+    // server-side against the auditorium's timezone.
+    function todayKeyLocal() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
     window.onload = function() {
       buildDeviceFingerprint();
-      if (localStorage.getItem('aisAttendanceSubmitted')) {
+      if (localStorage.getItem('aisAttendanceSubmittedDate') === todayKeyLocal()) {
         document.getElementById('location-box').classList.add('hidden');
         document.getElementById('already-submitted').classList.remove('hidden');
       } else {
@@ -283,7 +291,7 @@
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          localStorage.setItem('aisAttendanceSubmitted', 'true');
+          localStorage.setItem('aisAttendanceSubmittedDate', todayKeyLocal());
           document.getElementById('attendance-form').classList.add('hidden');
           document.getElementById('location-box').classList.add('hidden');
           document.getElementById('already-submitted').classList.remove('hidden');
