@@ -112,6 +112,25 @@
         </div>
 
         <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Department <span class="lang-ar normal-case tracking-normal text-slate-500 font-semibold">/ القسم</span> <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <select id="department" name="department" required class="field-input w-full pl-4 pr-9 py-3.5 rounded-xl border border-slate-300 focus:outline-none text-base transition font-medium bg-white appearance-none">
+              <option value="" disabled selected>Select department / اختر القسم</option>
+              <option value="Arabic Language">Arabic Language — اللغة العربية</option>
+              <option value="English">English — اللغة الإنجليزية</option>
+              <option value="Mathematics">Mathematics — الرياضيات</option>
+              <option value="Science">Science — العلوم</option>
+              <option value="Islamic Studies & Quran">Islamic Studies &amp; Quran — الدراسات الإسلامية والقرآن الكريم</option>
+              <option value="Social Studies / Humanities">Social Studies / Humanities — الدراسات الاجتماعية / العلوم الإنسانية</option>
+              <option value="Business & Economics">Business &amp; Economics — إدارة الأعمال والاقتصاد</option>
+              <option value="Computer Science">Computer Science — علوم الحاسب</option>
+              <option value="Other">Other — أخرى</option>
+            </select>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+          </div>
+        </div>
+
+        <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">School Email <span class="text-rose-500">*</span></label>
           <input type="email" id="staffEmail" name="staffEmail" required placeholder="teacher@ais.sch.sa" class="field-input w-full pl-4 pr-4 py-3.5 rounded-xl border border-slate-300 focus:outline-none text-base transition font-medium">
         </div>
@@ -279,6 +298,7 @@
 
       const formData = {
         teacherName: document.getElementById('teacherName').value.trim(),
+        department: document.getElementById('department').value,
         staffEmail: document.getElementById('staffEmail').value.trim(),
         eNumber: document.getElementById('eNumber').value.trim(),
         sessionTopic: "AIS Summer Faculty Training 2026",
